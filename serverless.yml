@@ -29,7 +29,7 @@ functions:
   organisation:
     handler: lorientechtest.handler
     environment:
-      MONGODB: ${env:MONGODB_URI}
+      MONGODB_URI: ${env:MONGODB_URI}
     #role: arn:aws:iam::#{AWS::AccountId}:role/WOZiTech_eu_west_1_tfl_lambda_role    # note, the name of the role includes the region, but with underscores
     events:
     tags:
