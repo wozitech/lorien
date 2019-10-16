@@ -1,26 +1,18 @@
 const myOrg = require('../../lib/lorientechtest');
 
 // input data
-const organisation = {
-    name: "WOZiTech Limited",
-    founded: 2016,
-    revenue: {
-        currency: "GBP",
-        value: 100
-    }
-};
 
 // mimic AWS API GW passthrough event
 const thisEvent = {
-    httpMethod: "POST",
-    pathParameters: undefined,
-    body: JSON.stringify(organisation),
+    httpMethod: "GET",
+    pathParameters: {
+        name: 'WOZiTech Limited Two'
+    },
 };
-
 
 const local = async () => {
     try {
-        console.log('Create organisation: ', organisation.name);
+        console.log('Get organisation: ', thisEvent.pathParameters.name);
         const returnVal = await myOrg.handler(
             thisEvent,
             { invokedFunctionArn : 'arn:aws:lambda:eu-west-1:accountid:function:wozitech-tech-test-lambda' },
