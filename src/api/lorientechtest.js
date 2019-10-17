@@ -68,45 +68,55 @@ const createOrganisation = async (event) => {
   }
 };
 
+let conn = null;
+const initialiseMongoDB = async () => {
+  const mongodbURI = process.env.MONGODB_URI;
+  if (!mongodbURI) throw Error('Missing MONGODB_URI env var');
+
+  conn = await MongoClient.connect(
+    mongodbURI,
+    {
+      useNewUrlParser: true,
+      poolSize: 5,
+      wtimeout: 2500,
+    },
+  );
+
+  await OrganisationDAO.initialise(conn);
+};
+
 
 export const handler = async (event, context, callback) => {
   const arnList = (context.invokedFunctionArn).split(":");
   const lambdaRegion = arnList[3];
-  const mongodbURI = process.env.MONGODB_URI;
 
   // console.log("WA DEBUG - the event method: ", event.httpMethod);
   // console.log("WA DEBUG - the event parameters: ", event.pathParameters);
   // console.log("WA DEBUG - the event body: ", JSON.parse(event.body));
 
+  await initialiseMongoDB();
+
+  let results = null;
   try {
-    if (!mongodbURI) throw Error('Missing MONGODB_URI env var');
-
-    const conn = await MongoClient.connect(
-      mongodbURI,
-      {
-        useNewUrlParser: true,
-        poolSize: 5,
-        wtimeout: 2500,
-      },
-    );
-
-    await OrganisationDAO.initialise(conn);
 
     switch (event.httpMethod) {
       case "POST":
-        return createOrganisation(event);
+        results = await createOrganisation(event);
         break;
       
       case "GET":
       default:
-        return getOrganisation(event);
+        results = await getOrganisation(event);
         break;
     }
-
+    
+    // callback(null, results);
+    return results;
 
   } catch (err) {
     // no intent given, user has simply opened the skill
     logError(`Unexpected ${err}`);
+    // callback(err,null);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'undisclosed' })

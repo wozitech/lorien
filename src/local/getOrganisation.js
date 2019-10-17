@@ -6,11 +6,12 @@ const myOrg = require('../../lib/lorientechtest');
 const thisEvent = {
     httpMethod: "GET",
     pathParameters: {
-        name: 'WOZiTech Limited Two'
+        name: 'WOZiTech Limited'
     },
 };
 
-const local = async () => {
+process.env.LOG_LEVEL = 3;
+;(async () => {
     try {
         console.log('Get organisation: ', thisEvent.pathParameters.name);
         const returnVal = await myOrg.handler(
@@ -30,8 +31,6 @@ const local = async () => {
         
     } catch (err) {
         console.error("Caught local error: ", err);
-    }
-}
-
-process.env.LOG_LEVEL = 3;
-local();
+    }   
+})()
+  

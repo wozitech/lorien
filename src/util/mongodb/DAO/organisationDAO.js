@@ -33,15 +33,6 @@ export default class OrganisationDAO {
         .find(
           {
             _id : name
-          },
-          {
-            projection: {
-              _id: 0,
-              name: "$_id",
-              founded: 1,
-              revenue: 1,
-              subsidaries: 1,
-            }
           }
         );
     } catch (e) {
@@ -49,7 +40,16 @@ export default class OrganisationDAO {
       return [];
     }
 
-    return cursor.toArray();
+    const results =  await cursor.toArray();
+    // remap _id to name
+    return results.map(thisOrg => {
+      return {
+        name: thisOrg._id,
+        founded: thisOrg.founded,
+        revenue: thisOrg.revenue,
+        subsidairies: thisOrg.subsidairies,
+      };
+    });
   }
 
   /**
@@ -62,7 +62,8 @@ export default class OrganisationDAO {
       const commentDoc = {
         _id: thisOrganisation.name,
         founded: thisOrganisation.founded,
-        revenue: thisOrganisation.revenue
+        revenue: thisOrganisation.revenue,
+        subsidairies: thisOrganisation.subsidairies,
       };
       const addResponse = await organisation.insertOne(commentDoc);
 
