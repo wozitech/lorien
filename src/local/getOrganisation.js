@@ -6,7 +6,7 @@ const myOrg = require('../../lib/lorientechtest');
 const thisEvent = {
     httpMethod: "GET",
     pathParameters: {
-        name: 'WOZiTech Limited'
+        name: 'Bob%20Unlimited'
     },
 };
 
@@ -32,5 +32,4 @@ process.env.LOG_LEVEL = 3;
     } catch (err) {
         console.error("Caught local error: ", err);
     }   
-})()
-  
+})();

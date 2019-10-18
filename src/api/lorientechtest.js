@@ -11,7 +11,7 @@ import OrganisationDAO from "../util/mongodb/DAO/organisationDAO";
 
 // local helpers - should refactor
 const getOrganisation = async (event) => {
-  const theName = event.pathParameters.name;
+  const theName = decodeURI(event.pathParameters.name);
 
   if (theName) {
     const organisationName = await getOrganisationByName(theName);
