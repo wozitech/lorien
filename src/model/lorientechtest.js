@@ -19,3 +19,9 @@ export const updateOrganisationByName = async (name, organisation) => {
   // TODO - partial update - assumes revenue and founded are given, and if not, will overwrite the document values
   return OrganisationDAO.updateByName(name, organisation.revenue, organisation.founded);
 };
+
+// delete organisation by name
+export const deleteOrganisationByName = async (name) => {
+  // TODO - validation should be here
+  return OrganisationDAO.deleteByName(name);
+};

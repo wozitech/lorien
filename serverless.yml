@@ -47,6 +47,13 @@ functions:
             parameters:
               path:
                 name: true
+      - http:
+          path: organisation/{name}
+          method: delete
+          request:
+            parameters:
+              path:
+                name: true
     tags:
       company: "WOZiTech"
     package:

@@ -1,7 +1,7 @@
 'use strict';
 
 import assert from 'assert';
-import { getOrganisationByName, createOrganisationByName, updateOrganisationByName } from '../model/lorientechtest';
+import { getOrganisationByName, createOrganisationByName, updateOrganisationByName, deleteOrganisationByName } from '../model/lorientechtest';
 import { logInfo, logError, logWarn, logTrace } from '../common/logger';
 
 // MongoDB
@@ -10,6 +10,32 @@ import OrganisationDAO from "../util/mongodb/DAO/organisationDAO";
 
 
 // local helpers - should refactor
+const deleteOrganisation = async (event) => {
+  const theName = decodeURI(event.pathParameters.name);
+
+  if (theName) {
+    const deleted = await deleteOrganisationByName(theName);
+
+    // only expecting one if any
+    if (deleted === 1) {
+      return {
+        statusCode: 204       // NO_CONTENT
+      };
+    
+    } else if (deleted === -1) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ error: 'Not found'})
+      };
+    }
+  } else {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Unexpected'})
+    };
+  }
+};
+
 const updateOrganisation = async (event) => {
   const theName = decodeURI(event.pathParameters.name);
   const body = JSON.parse(event.body);
@@ -83,7 +109,7 @@ const createOrganisation = async (event) => {
   // only expecting one if any
   if (organisation) {
     return {
-      statusCode: 200,
+      statusCode: 201,
       body: JSON.stringify(organisation)
     };
   
@@ -135,6 +161,10 @@ export const handler = async (event, context, callback) => {
       
       case "PUT":
         results = await updateOrganisation(event);
+        break;
+
+      case "DELETE":
+        results = await deleteOrganisation(event);
         break;
 
       case "GET":

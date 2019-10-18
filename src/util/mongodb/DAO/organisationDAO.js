@@ -97,4 +97,24 @@ export default class OrganisationDAO {
       return null;
     }
   }
+
+  /**
+   * Deletes an organisation by name; excludes subidairies
+   */
+  static async deleteByName(name, revenue, founded) {
+    try {
+      const deleteResponse = await organisation.deleteOne(
+        { _id: name, },
+      );
+
+      let returnVal=0;
+      deleteResponse && deleteResponse.result && deleteResponse.result.n===1 ? returnVal=1 : false;
+      deleteResponse && deleteResponse.result && deleteResponse.result.n===0 ? returnVal=-1 : false;
+
+      return returnVal;
+    } catch (e) {
+      console.error(`Unable to delete organsiation by name, ${e}`)
+      return false;
+    }
+  }
 }
