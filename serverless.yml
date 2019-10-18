@@ -40,6 +40,13 @@ functions:
             parameters:
               path:
                 name: true
+      - http:
+          path: organisation/{name}
+          method: put
+          request:
+            parameters:
+              path:
+                name: true
     tags:
       company: "WOZiTech"
     package:

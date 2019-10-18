@@ -1,7 +1,7 @@
 'use strict';
 
 import assert from 'assert';
-import { getOrganisationByName, createOrganisationByName } from '../model/lorientechtest';
+import { getOrganisationByName, createOrganisationByName, updateOrganisationByName } from '../model/lorientechtest';
 import { logInfo, logError, logWarn, logTrace } from '../common/logger';
 
 // MongoDB
@@ -10,6 +10,35 @@ import OrganisationDAO from "../util/mongodb/DAO/organisationDAO";
 
 
 // local helpers - should refactor
+const updateOrganisation = async (event) => {
+  const theName = decodeURI(event.pathParameters.name);
+  const body = JSON.parse(event.body);
+
+  // the name can't be changed because ir's a primary key
+  if (theName) {
+    const updated = await updateOrganisationByName(theName, body);
+
+    // only expecting one if any
+    if (updated === 1) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ name: theName })
+      };
+    
+    } else if (updated === -1) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ error: 'Not found'})
+      };
+    }
+  } else {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Unexpected'})
+    };
+  }
+};
+
 const getOrganisation = async (event) => {
   const theName = decodeURI(event.pathParameters.name);
 
@@ -104,6 +133,10 @@ export const handler = async (event, context, callback) => {
         results = await createOrganisation(event);
         break;
       
+      case "PUT":
+        results = await updateOrganisation(event);
+        break;
+
       case "GET":
       default:
         results = await getOrganisation(event);

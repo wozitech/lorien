@@ -23,33 +23,55 @@ export default class OrganisationDAO {
   }
 
   /**
+   * Updates an organisation by name; excludes subidairies
+   */
+  static async updateByName(name, revenue, founded) {
+    try {
+      const updateResponse = await organisation.updateOne(
+        { _id: name, },
+        { $set: {
+            revenue,
+            founded,
+          }
+        },
+      );
+
+      let returnVal=0;
+      updateResponse && updateResponse.result && updateResponse.result.n===1 ? returnVal=1 : false;
+      updateResponse && updateResponse.result && updateResponse.result.n===0 ? returnVal=-1 : false;
+
+      return returnVal;
+    } catch (e) {
+      console.error(`Unable to update organsiation by name, ${e}`)
+      return false;
+    }
+
+  }
+
+  /**
    * Retrieves organisation by name
    */
   static async getByName(name) {
     // returning an array of - in preparation for filtered/faceted/wildcard searches
-    let cursor;
     try {
-      cursor = await organisation
-        .find(
-          {
-            _id : name
-          }
-        );
+      let cursor;
+      cursor = await organisation.find({ _id : name });
+
+      const results =  await cursor.toArray();
+      // remap _id to name
+      return results.map(thisOrg => {
+        return {
+          name: thisOrg._id,
+          founded: thisOrg.founded,
+          revenue: thisOrg.revenue,
+          subsidairies: thisOrg.subsidairies,
+        };
+      });
+  
     } catch (e) {
       console.error(`Unable to find organsiation by name, ${e}`)
       return [];
     }
-
-    const results =  await cursor.toArray();
-    // remap _id to name
-    return results.map(thisOrg => {
-      return {
-        name: thisOrg._id,
-        founded: thisOrg.founded,
-        revenue: thisOrg.revenue,
-        subsidairies: thisOrg.subsidairies,
-      };
-    });
   }
 
   /**
