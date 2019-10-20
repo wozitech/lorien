@@ -10,4 +10,4 @@ lib/**
 coverage/**
 
 # personal data
-resources/myBusData.json
+resources/*
